@@ -123,4 +123,28 @@ dotenv.config()
     commitment: "confirmed",
   })
   console.log(explorerURL({ txSignature }))
+
+  const tx2 = await program.methods
+    .burnCompressedNft(root, dataHash, creatorHash, new BN(nonce), index)
+    .accounts({
+      leafOwner: payer.publicKey,
+      leafDelegate: payer.publicKey,
+      merkleTree: treeAddress,
+      treeAuthority: treeAuthority,
+      logWrapper: SPL_NOOP_PROGRAM_ID,
+      bubblegumProgram: BUBBLEGUM_PROGRAM_ID,
+      compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+    })
+    .remainingAccounts(proofPath)
+    .transaction()
+
+  const txSignature2 = await sendAndConfirmTransaction(
+    connection,
+    tx2,
+    [payer],
+    {
+      commitment: "confirmed",
+    }
+  )
+  console.log(explorerURL({ txSignature: txSignature2 }))
 })()
